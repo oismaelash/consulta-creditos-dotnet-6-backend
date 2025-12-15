@@ -60,6 +60,22 @@ services:
     networks:
       - consulta-creditos-network
 
+  kafka-init:
+    image: apache/kafka:3.7.0
+    container_name: consulta-creditos-kafka-init
+    depends_on:
+      kafka:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-lc"]
+    command:
+      - >
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists
+        --topic integrar-credito-constituido-entry --partitions 1 --replication-factor 1 &&
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists
+        --topic consulta-creditos-audit --partitions 1 --replication-factor 1
+    networks:
+      - consulta-creditos-network
+
   api:
     build:
       context: .
