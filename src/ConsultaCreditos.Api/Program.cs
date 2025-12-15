@@ -1,3 +1,4 @@
+using System.Linq;
 using ConsultaCreditos.Api.HealthChecks;
 using ConsultaCreditos.Api.HostedServices;
 using ConsultaCreditos.Application.Ports;
@@ -50,10 +51,33 @@ builder.Services.AddHealthChecks()
 var app = builder.Build();
 
 // Apply migrations
-using (var scope = app.Services.CreateScope())
+try
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    dbContext.Database.Migrate();
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var pendingMigrations = dbContext.Database.GetPendingMigrations().ToList();
+        
+        if (pendingMigrations.Any())
+        {
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation("Aplicando {Count} migration(s) pendente(s): {Migrations}", 
+                pendingMigrations.Count, string.Join(", ", pendingMigrations));
+            dbContext.Database.Migrate();
+            logger.LogInformation("Migrations aplicadas com sucesso");
+        }
+        else
+        {
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation("Nenhuma migration pendente. Banco de dados está atualizado.");
+        }
+    }
+}
+catch (Exception ex)
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "Erro ao aplicar migrations. Verifique a conexão com o banco de dados.");
+    throw;
 }
 
 // Configure the HTTP request pipeline
