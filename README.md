@@ -356,9 +356,9 @@ A idempotência é garantida através de:
 ## Próximos Passos (Melhorias Futuras)
 
 - Implementar dead-letter queue para mensagens com falha após N tentativas
-- Adicionar métricas (Prometheus)
-- Implementar retry policy configurável
-- Adicionar testes de integração com Testcontainers
+- Adicionar testes de integração
+- Adicionar **cache com Redis** nos endpoints **GET** de créditos (`GET /api/creditos/{numeroNfse}` e `GET /api/creditos/credito/{numeroCredito}`) para reduzir latência e carga no PostgreSQL (com estratégia de invalidação/TTL)
+- Desacoplar os **Background Services** (consumers Kafka) do host da API, separando em um **Worker Service**/deployment próprio para permitir **escalabilidade independente** (API scale-out vs consumers scale-out)
 - Implementar rate limiting na API
 - Adicionar autenticação/autorização se necessário
 
