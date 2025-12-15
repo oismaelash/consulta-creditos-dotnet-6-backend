@@ -10,6 +10,7 @@ public class AppDbContext : DbContext
     }
 
     public DbSet<Credito> Creditos { get; set; } = null!;
+    public DbSet<AuditoriaConsulta> AuditoriasConsultas { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -88,6 +88,57 @@ namespace ConsultaCreditos.Infrastructure.Migrations
 
                     b.ToTable("credito", (string)null);
                 });
+
+            modelBuilder.Entity("ConsultaCreditos.Domain.Entities.AuditoriaConsulta", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("ChaveConsulta")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("chave_consulta");
+
+                    b.Property<string>("CorrelationId")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("correlation_id");
+
+                    b.Property<string>("MessageId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("message_id");
+
+                    b.Property<DateTime>("OccurredAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("occurred_at");
+
+                    b.Property<string>("TipoConsulta")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("tipo_consulta");
+
+                    b.HasKey("Id")
+                        .HasName("PK_auditoria_consulta");
+
+                    b.HasIndex("ChaveConsulta")
+                        .HasDatabaseName("IX_auditoria_consulta_chave_consulta");
+
+                    b.HasIndex("OccurredAt")
+                        .HasDatabaseName("IX_auditoria_consulta_occurred_at");
+
+                    b.HasIndex("TipoConsulta")
+                        .HasDatabaseName("IX_auditoria_consulta_tipo_consulta");
+
+                    b.ToTable("auditoria_consulta", (string)null);
+                });
 #pragma warning restore 612, 618
         }
     }

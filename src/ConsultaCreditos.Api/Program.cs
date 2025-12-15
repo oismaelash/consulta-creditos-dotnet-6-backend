@@ -25,6 +25,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Repositories
 builder.Services.AddScoped<ICreditoRepository, CreditoRepository>();
+builder.Services.AddScoped<IAuditoriaRepository, AuditoriaRepository>();
 
 // Kafka Factories
 builder.Services.AddSingleton<KafkaProducerFactory>();
@@ -38,9 +39,12 @@ builder.Services.AddSingleton<IAuditPublisher, KafkaAuditPublisher>();
 builder.Services.AddScoped<IntegrarCreditoUseCase>();
 builder.Services.AddScoped<ConsultarCreditosPorNfseUseCase>();
 builder.Services.AddScoped<ConsultarCreditoPorNumeroUseCase>();
+builder.Services.AddScoped<ConsultarAuditoriasUseCase>();
+builder.Services.AddScoped<ConsultarAuditoriaPorIdUseCase>();
 
-// Background Service
+// Background Services
 builder.Services.AddHostedService<CreditoIntegrationConsumerService>();
+builder.Services.AddHostedService<AuditoriaConsumerService>();
 
 // Health Checks
 builder.Services.AddHealthChecks()
