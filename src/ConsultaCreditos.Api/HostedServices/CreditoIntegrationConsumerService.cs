@@ -7,24 +7,25 @@ using Confluent.Kafka;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ConsultaCreditos.Api.HostedServices;
 
 public class CreditoIntegrationConsumerService : BackgroundService
 {
     private readonly IConsumer<string, string> _consumer;
-    private readonly ICreditoRepository _repository;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<CreditoIntegrationConsumerService> _logger;
     private readonly string _topic;
 
     public CreditoIntegrationConsumerService(
         KafkaConsumerFactory consumerFactory,
-        ICreditoRepository repository,
+        IServiceScopeFactory scopeFactory,
         IConfiguration configuration,
         ILogger<CreditoIntegrationConsumerService> logger)
     {
         _consumer = consumerFactory.CreateConsumer("credito-integration-consumer-group");
-        _repository = repository;
+        _scopeFactory = scopeFactory;
         _logger = logger;
         _topic = configuration["Kafka:Topics:Integracao"] ?? "integrar-credito-constituido-entry";
     }
@@ -91,8 +92,11 @@ public class CreditoIntegrationConsumerService : BackgroundService
                 "Processando mensagem. NumeroCredito: {NumeroCredito}, Offset: {Offset}, Partition: {Partition}",
                 message.NumeroCredito, result.Offset, result.Partition);
 
+            using var scope = _scopeFactory.CreateScope();
+            var repository = scope.ServiceProvider.GetRequiredService<ICreditoRepository>();
+
             // Verificar idempotência
-            var existe = await _repository.ExistePorNumeroCreditoAsync(message.NumeroCredito, cancellationToken);
+            var existe = await repository.ExistePorNumeroCreditoAsync(message.NumeroCredito, cancellationToken);
             
             if (existe)
             {
@@ -105,11 +109,11 @@ public class CreditoIntegrationConsumerService : BackgroundService
 
             // Inserir crédito
             var credito = message.ToEntity();
-            await _repository.AdicionarAsync(credito, cancellationToken);
+            await repository.AdicionarAsync(credito, cancellationToken);
             
             try
             {
-                await _repository.SalvarAlteracoesAsync(cancellationToken);
+                await repository.SalvarAlteracoesAsync(cancellationToken);
                 _logger.LogInformation(
                     "Crédito {NumeroCredito} inserido com sucesso. Offset: {Offset}",
                     message.NumeroCredito, result.Offset);
