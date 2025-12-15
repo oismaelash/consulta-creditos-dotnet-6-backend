@@ -67,15 +67,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Health Check endpoints
-app.MapHealthChecks("/self", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
-{
-    Predicate = check => check.Tags.Contains("self")
-});
-
-app.MapHealthChecks("/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
-{
-    Predicate = check => check.Tags.Contains("ready")
-});
-
 app.Run();
