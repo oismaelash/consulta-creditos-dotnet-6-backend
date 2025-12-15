@@ -101,13 +101,6 @@ Todas as variáveis têm valores padrão, mas podem ser sobrescritas via arquivo
 | Health Checks | Básicos | Completos |
 | Build | SDK completo | Multi-stage otimizado |
 
-## Migração do docker-compose.yml Original
-
-O arquivo `docker-compose.yml` original ainda existe para compatibilidade, mas recomenda-se usar:
-
-- **Desenvolvimento**: `docker-compose.dev.yml`
-- **Produção**: `docker-compose.prod.yml`
-
 ## Troubleshooting
 
 ### Porta já em uso
