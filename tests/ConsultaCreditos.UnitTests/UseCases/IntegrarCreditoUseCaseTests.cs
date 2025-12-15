@@ -11,14 +11,16 @@ namespace ConsultaCreditos.UnitTests.UseCases;
 public class IntegrarCreditoUseCaseTests
 {
     private readonly Mock<IIntegrationPublisher> _publisherMock;
+    private readonly Mock<IAuditPublisher> _auditPublisherMock;
     private readonly Mock<Microsoft.Extensions.Logging.ILogger<IntegrarCreditoUseCase>> _loggerMock;
     private readonly IntegrarCreditoUseCase _useCase;
 
     public IntegrarCreditoUseCaseTests()
     {
         _publisherMock = new Mock<IIntegrationPublisher>();
+        _auditPublisherMock = new Mock<IAuditPublisher>();
         _loggerMock = new Mock<Microsoft.Extensions.Logging.ILogger<IntegrarCreditoUseCase>>();
-        _useCase = new IntegrarCreditoUseCase(_publisherMock.Object, _loggerMock.Object);
+        _useCase = new IntegrarCreditoUseCase(_publisherMock.Object, _auditPublisherMock.Object, _loggerMock.Object);
     }
 
     [Fact]
@@ -62,6 +64,11 @@ public class IntegrarCreditoUseCaseTests
         _publisherMock.Verify(
             p => p.PublishAsync(It.IsAny<CreditoIntegracaoMessage>(), It.IsAny<CancellationToken>()),
             Times.Exactly(2));
+        
+        // Verificar que a auditoria foi publicada
+        _auditPublisherMock.Verify(
+            p => p.PublishAsync(It.Is<ConsultaAuditMessage>(m => m.TipoConsulta == "IntegracaoCredito"), It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Fact]
