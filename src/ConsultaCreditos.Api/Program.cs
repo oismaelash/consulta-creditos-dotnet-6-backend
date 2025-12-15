@@ -43,7 +43,7 @@ builder.Services.AddHostedService<CreditoIntegrationConsumerService>();
 
 // Health Checks
 builder.Services.AddHealthChecks()
-    .AddNpgSql(connectionString, name: "postgres", tags: new[] { "ready" })
+    .AddCheck<PostgresHealthCheck>("postgres", tags: new[] { "ready" })
     .AddCheck<KafkaHealthCheck>("kafka", tags: new[] { "ready" })
     .AddCheck("self", () => HealthCheckResult.Healthy(), tags: new[] { "self" });
 
