@@ -1,0 +1,27 @@
+# Development Dockerfile with hot reload support
+FROM mcr.microsoft.com/dotnet/sdk:6.0
+WORKDIR /src
+
+# Install dotnet-ef tool for migrations
+RUN dotnet tool install --global dotnet-ef --version 6.0.0
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+# Copy csproj files and restore dependencies
+# Note: Source code will be mounted as volume, so we only copy project files for restore
+COPY ["src/ConsultaCreditos.Api/ConsultaCreditos.Api.csproj", "src/ConsultaCreditos.Api/"]
+COPY ["src/ConsultaCreditos.Application/ConsultaCreditos.Application.csproj", "src/ConsultaCreditos.Application/"]
+COPY ["src/ConsultaCreditos.Domain/ConsultaCreditos.Domain.csproj", "src/ConsultaCreditos.Domain/"]
+COPY ["src/ConsultaCreditos.Infrastructure/ConsultaCreditos.Infrastructure.csproj", "src/ConsultaCreditos.Infrastructure/"]
+
+# Restore dependencies
+RUN dotnet restore "src/ConsultaCreditos.Api/ConsultaCreditos.Api.csproj"
+
+WORKDIR "/src/src/ConsultaCreditos.Api"
+
+# Expose port
+EXPOSE 8080
+
+# Use dotnet watch for hot reload
+# DOTNET_USE_POLLING_FILE_WATCHER=true is set in docker-compose for file watching in Docker
+CMD ["dotnet", "watch", "run", "--no-launch-profile"]
+

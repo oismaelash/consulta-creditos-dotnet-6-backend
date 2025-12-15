@@ -79,17 +79,21 @@ services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: consulta-creditos-api
     ports:
       - "8080:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
       ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=consultacreditos;Username=postgres;Password=postgres
       Kafka__BootstrapServers: kafka:9092
       Kafka__Topics__Integracao: integrar-credito-constituido-entry
       Kafka__Topics__Auditoria: consulta-creditos-audit
+    volumes:
+      - ./src:/src/src
+      - ./ConsultaCreditos.sln:/src/ConsultaCreditos.sln
     depends_on:
       postgres:
         condition: service_healthy
