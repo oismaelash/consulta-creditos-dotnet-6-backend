@@ -2,6 +2,11 @@
 
 Microserviço desenvolvido em .NET 6 para integração, processamento assíncrono e consulta de créditos tributários (ISSQN), utilizando mensageria Kafka, Background Service e banco de dados PostgreSQL.
 
+## Links
+
+- **Ver no YouTube**: [credito-constituido-youtube](https://sharecontent.io/x/credito-constituido-youtube)
+- **Ver o app rodando no ar**: [credito-constituido-app](https://sharecontent.io/x/credito-constituido-app)
+
 ## Arquitetura
 
 O sistema é composto por um único serviço ASP.NET Core que hospeda:
