@@ -76,6 +76,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
+      Swagger__Enabled: "true"
       ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=${POSTGRES_DB:-consultacreditos};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
       Kafka__BootstrapServers: kafka:9092
       Kafka__Topics__Integracao: integrar-credito-constituido-entry

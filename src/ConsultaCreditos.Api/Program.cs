@@ -85,7 +85,9 @@ catch (Exception ex)
 }
 
 // Configure the HTTP request pipeline
-if (app.Environment.IsDevelopment())
+var enableSwagger = builder.Configuration.GetValue<bool>("Swagger:Enabled", false);
+
+if (app.Environment.IsDevelopment() || enableSwagger)
 {
     app.UseSwagger();
     app.UseSwaggerUI();
